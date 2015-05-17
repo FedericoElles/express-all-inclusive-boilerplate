@@ -60,32 +60,18 @@ allinc.addFolder('desktop', {
 app.get('/', function(req, res) {
   if (!req.useragent.isMobile){
     //static landing page
-    res.sendFile(path.join(__dirname, 'desktop', 'index.html'));
+    allinc.desktop.serve(req, res, {});
   } else {
     //mobile app
-    allinc.static.serve(req, res, {
+    allinc.mobile.serve(req, res, {
       include: [
-      'app.js', 
-      '/libs/geo.js',
-      '/libs/geolocator.js',
-      '/libs/ls.js',
-      '/libs/api.js',
-      '/libs/emergency.js',
-      '/libs/riot.min.js',
-      '/libs/hammer.min.js',
+      '/mobile/libs/geolocator.js',
       //custom
-      '/libs/fn-location.js',
       //reusable
-      '/tags/german-date.js',
-      '/tags/text-trunc.js',
-      '/tags/phone.js',
-      '/tags/sidemenu.js',
-      '/tags/navbar.js',
-      '/tags/splashscreen.js',
-      '/tags/app.js',
-      '/css/normalize.css', 
-      '/css/skeleton.css', 
-      '/css/app.sass.css'
+      '/mobile/tags/app.js',
+      '/mobile/css/normalize.css', 
+      '/mobile/css/skeleton.css', 
+      '/mobile/css/app.sass.css'
       ]
     });    
   }
@@ -94,11 +80,16 @@ app.get('/', function(req, res) {
 
 
 
-app.get('/tags/*', allinc.mobile.riot()); //support for riot tags
+
+app.get('/mobile/tags/*', allinc.mobile.riot()); //support for riot tags
+app.get('/mobile/*', allinc.mobile.serve());
 app.get('/desktop/*', allinc.desktop.serve());
 
 app.get('/cache.appcache', allinc.mobile.serve());
 
+
+//static resources like img or js files
+app.use(express.static('static')); 
 
 
 
