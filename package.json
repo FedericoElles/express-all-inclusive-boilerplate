@@ -1,0 +1,19 @@
+{
+  "name": "express-all-inclusive-boilerplate",
+  "version": "1.0.0",
+  "description": "Boilerplate project for the \"Express All inclusive\" package",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/FedericoElles/express-all-inclusive-boilerplate.git"
+  },
+  "author": "Federico Elles <federicoplus@gmail.com>",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/FedericoElles/express-all-inclusive-boilerplate/issues"
+  },
+  "homepage": "https://github.com/FedericoElles/express-all-inclusive-boilerplate#readme"
+}
