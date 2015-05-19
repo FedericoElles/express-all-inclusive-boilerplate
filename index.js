@@ -27,6 +27,73 @@ app.use(useragent.express());
 
 
 
+//set correct header for all API calls
+ app.use(function(req, res, next) {
+  if ((req.path||'').indexOf('api/') > -1 ){
+    res.setHeader('Content-Type', 'application/json; charset=utf-8');    
+  }
+  next();
+});
+
+
+/*
+ * Subdomain Support
+ *
+ * app.?.com -> req._app = true
+ * subdomain.?.com -> req._loc = true
+ * combined:
+ * subdomain.app.?.com -> _app & _loc are populated
+ *
+ * The req._loc parameter is used as key for setting and getting data, here it is defined
+ */
+
+//allowed subdomains
+var subdomains = {
+  'd' : 'Düsseldorf',
+  'xn--dsseldorf-q9a' : 'Düsseldorf',
+  'duesseldorf' : 'Düsseldorf'
+};
+
+app.use(function(req, res, next) {
+  
+  req._loc = 'www'; //default is www
+  req._app = false; //do not load mobile app
+
+
+  //console.log('_loc: ' + req._loc.toLowerCase(), req.subdomains);
+
+  if (req.subdomains.length > 0){
+    req._loc = req.subdomains[0];
+  }
+
+  //subdomain.app.?.com will also populate the _location
+  if (req._loc === 'app'){
+    req._app = true;
+    if (req.subdomains.length > 1){
+      req._loc = req.subdomains[1];
+    }
+  }
+
+
+  //check subdomain against whitelist
+  if (subdomains[req._loc.toLowerCase()]){
+    req._loc = subdomains[req._loc.toLowerCase()];
+  } else {
+    req._loc = 'www';
+  }
+  
+  //if we are on the original heroku domain or on localhost, use the default: timos
+  if (req.hostname.indexOf('herokuapp.com') > 0 ){ 
+    req._loc = 'Düsseldorf';
+  }
+
+  //req._debug = req.hostname === 'localhost';
+
+  next();
+});
+
+
+
 
 /*████╗ ██████╗ ██╗
 ██╔══██╗██╔══██╗██║
@@ -58,7 +125,7 @@ allinc.addFolder('desktop', {
 
 
 app.get('/', function(req, res) {
-  if (!req.useragent.isMobile){
+  if (!req.useragent.isMobile && !req._app){
     //static landing page
     allinc.desktop.serve(req, res, {});
   } else {
